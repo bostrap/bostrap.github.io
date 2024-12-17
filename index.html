@@ -2,7 +2,43 @@
 <html>
 <head>
  <title>Selamat Ulang Tahun</title>
- <link rel="stylesheet" href="./style/style.css">
+<style type="text/css" id="dcoder_stylesheet">
+.kue {
+ width: 200px;
+ height: 200px;
+ background-color: #f2f2f2;
+ border-radius: 50%;
+ position: relative;
+}
+
+.lilin {
+ width: 10px;
+ height: 50px;
+ background-color: #ffff00;
+ position: absolute;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+ margin-left: -30px;
+}
+
+.lilin:nth-child(2) {
+ margin-left: 0;
+}
+
+.lilin:nth-child(3) {
+ margin-left: 30px;
+}
+
+#ucapan {
+ position: absolute;
+ top: 250px;
+ left: 50%;
+ transform: translateX(-50%);
+ font-size: 24px;
+ font-weight: bold;
+}
+</style>
 </head>
 <body>
  <div class="kue">
@@ -11,7 +47,50 @@
  <div class="lilin" id="lilin3"></div>
  </div>
  <p id="ucapan"></p>
+<script type="text/javascript" id="dcoder_script">
+ let lilin = document.querySelectorAll('.lilin');
+let ucapan = document.getElementById('ucapan');
 
- <script src="./script/script.js"></script>
+// Deteksi suara
+const audioContext = new AudioContext();
+const analyser = audioContext.createAnalyser();
+const microphone = audioContext.createMediaStreamSource(stream);
+
+microphone.connect(analyser);
+
+analyser.fftSize = 256;
+
+const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+function update() {
+ requestAnimationFrame(update);
+ analyser.getByteFrequencyData(frequencyData);
+
+ // Deteksi suara keras (tiupan)
+ if (frequencyData[0] > 100) {
+ lilin.forEach((lilin) => {
+ lilin.style.height = '0px';
+ });
+ ucapan.innerHTML = 'Selamat Ulang Tahun!';
+ setTimeout(() => {
+ lilin.forEach((lilin) => {
+ lilin.style.height = '50px';
+ });
+ ucapan.innerHTML = '';
+ }, 3000);
+ }
+}
+
+update();
+
+// Izinkan akses mikrofon
+navigator.mediaDevices.getUserMedia({ audio: true })
+ .then((stream) => {
+ // Gunakan stream audio
+ })
+ .catch((error) => {
+ console.error('Izin akses mikrofon dibutuhkan.');
+ });              
+</script>
 </body>
 </html>
