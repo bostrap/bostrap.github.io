@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bot WhatsApp - FahriOfficial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #0b0f1a;               /* dasar gelap */
+      --fg: #c9d1e6;               /* teks netral */
+      --fg-dim: #9aa6bf;           /* teks deskripsi */
+      --brand: #7cc6ff;            /* logo biru muda */
+      --btn-grad-a: #5c7cff;       /* gradient tombol awal */
+      --btn-grad-b: #7e4dff;       /* gradient tombol akhir */
+      --ring: rgba(124, 198, 255, .35);
+      --card: rgba(255,255,255,0.06);
+      --card-border: rgba(255,255,255,0.08);
+      --whatsapp: #25D366;         /* warna WhatsApp */
+      --telegram: #0088CC;         /* warna Telegram */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji','Segoe UI Emoji', 'Segoe UI Symbol';
+      color:var(--fg);
+      background: radial-gradient(1200px 600px at 90% 0%, rgba(49,74,116,.35) 0%, rgba(11,15,26,0) 60%),
+                  radial-gradient(900px 500px at 0% 90%, rgba(31,67,102,.35) 0%, rgba(11,15,26,0) 60%),
+                  linear-gradient(180deg, #0b0f1a 0%, #0a0d17 100%);
+      overflow-x:hidden;
+    }
+    /* top bar */
+    .nav{
+      position:sticky; top:0; width:100%; z-index:10;
+      backdrop-filter:saturate(130%) blur(8px);
+      background: linear-gradient(to bottom, rgba(11,15,26,.85), rgba(11,15,26,.35));
+      border-bottom:1px solid rgba(255,255,255,0.04);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:18px 20px;}
+    .brand{font-weight:800; font-size:22px; letter-spacing:.2px; color:var(--brand); text-decoration:none}
+    
+    /* Music Player */
+    .music-player {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .music-btn {
+      background: none;
+      border: none;
+      color: var(--fg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      transition: all 0.2s ease;
+    }
+    
+    .music-btn:hover {
+      background: rgba(124, 198, 255, 0.15);
+      color: var(--brand);
+    }
+    
+    .music-btn.play {
+      background: var(--brand);
+      color: #0b0f1a;
+    }
+    
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .volume-slider {
+      width: 80px;
+      -webkit-appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.2);
+      outline: none;
+    }
+    
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--brand);
+      cursor: pointer;
+    }
+    
+    /* hero */
+    .hero{min-height:60vh; display:flex; align-items:center}
+    .hero-inner{max-width:980px; margin:0 auto; padding:32px 20px; text-align:center;}
+    .eyebrow{
+      display:inline-block; font-size:14px; font-weight:600; color:var(--brand); 
+      background:rgba(124,198,255,0.12); padding:6px 14px; border-radius:999px; margin-bottom:16px;
+    }
+    .title{
+      margin:0 0 12px; line-height:1.05;
+      font-size:clamp(36px, 5.6vw, 60px);
+      font-weight:800;
+      letter-spacing:-0.02em;
+      background: linear-gradient(180deg, #9ecbff 0%, #6ea1ff 30%, #b7c2d9 100%);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .title .line2{display:block; color:#ffffff; -webkit-text-fill-color:#ffffff; background:none}
+    .desc{
+      margin:14px 0 34px; max-width:800px; font-size:clamp(15px, 2.8vw, 20px); line-height:1.7; color:var(--fg-dim); margin-left:auto; margin-right:auto;
+    }
+
+    .actions{display:flex; flex-wrap:wrap; gap:16px; justify-content:center;}
+    .btn{appearance:none; border:none; cursor:pointer; font-weight:600; padding:16px 28px; border-radius:999px; font-size:16px; transition:transform .08s ease, box-shadow .2s ease, background .2s ease, color .2s ease}
+
+    .btn-primary{
+      background: linear-gradient(90deg, var(--btn-grad-a), var(--btn-grad-b));
+      color:#fff; box-shadow:0 10px 30px rgba(110,120,255,.25), inset 0 0 0 1px rgba(255,255,255,.06);
+    }
+    .btn-primary:hover{transform:translateY(-1px); box-shadow:0 14px 40px rgba(110,120,255,.35), inset 0 0 0 1px rgba(255,255,255,.08)}
+    .btn-primary:active{transform:translateY(0)}
+
+    .btn-ghost{
+      background: transparent; color:#e7eaf3; border:1px solid rgba(231,234,243,.2);
+      box-shadow:0 6px 20px rgba(0,0,0,.15);
+    }
+    .btn-ghost:hover{background: rgba(255,255,255,0.04);}
+
+    /* soft glow ring like screenshot */
+    .ring{
+      position:absolute; inset:auto 0 10% 0; margin:auto; width:min(90%,1100px); height:72px; border-radius:999px; filter:blur(22px);
+      background: radial-gradient(60% 100% at 50% 50%, var(--ring), rgba(124, 198, 255, 0) 80%);
+      pointer-events:none;
+    }
+
+    /* features section */
+    .section{padding:80px 0;}
+    .section-title{
+      text-align:center; font-size:36px; font-weight:700; margin-bottom:60px;
+      background: linear-gradient(180deg, #9ecbff 0%, #6ea1ff 30%, #b7c2d9 100%);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .features-grid{
+      display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:24px;
+    }
+    .feature-card{
+      background:var(--card); border:1px solid var(--card-border); border-radius:16px; padding:28px;
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .feature-card:hover{
+      transform:translateY(-4px); box-shadow:0 20px 40px rgba(0,0,0,0.2);
+    }
+    .feature-icon{
+      width:60px; height:60px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg, rgba(124,198,255,0.15), rgba(126,77,255,0.15)); margin-bottom:20px;
+    }
+    .feature-title{font-size:20px; font-weight:600; margin:0 0 12px; color:#fff;}
+    .feature-desc{color:var(--fg-dim); line-height:1.6; margin:0;}
+
+    /* pricing section */
+    .pricing-grid{
+      display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:32px; margin-top:40px;
+    }
+    .pricing-card{
+      background:var(--card); border:1px solid var(--card-border); border-radius:16px; padding:32px; position:relative;
+    }
+    .pricing-card.popular{border:1px solid rgba(124,198,255,0.4); box-shadow:0 0 30px rgba(124,198,255,0.15);}
+    .popular-badge{
+      position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--brand); color:#0b0f1a;
+      padding:6px 16px; border-radius:999px; font-size:12px; font-weight:700;
+    }
+    .pricing-title{font-size:24px; font-weight:700; margin:0 0 16px; text-align:center; color:#fff;}
+    .pricing-price{
+      text-align:center; font-size:42px; font-weight:800; margin:0 0 8px;
+      background: linear-gradient(180deg, #9ecbff 0%, #6ea1ff 30%, #b7c2d9 100%);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .pricing-desc{text-align:center; color:var(--fg-dim); margin:0 0 24px;}
+    .pricing-features{
+      list-style:none; padding:0; margin:0 0 32px;
+    }
+    .pricing-features li{
+      display:flex; align-items:center; margin-bottom:12px; color:var(--fg);
+    }
+    .pricing-features li:before{
+      content:''; display:inline-block; width:20px; height:20px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%237cc6ff'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 13l4 4L19 7' /%3E%3C/svg%3E");
+      background-repeat:no-repeat; margin-right:12px;
+    }
+    .pricing-cta{text-align:center;}
+
+    /* FAQ section */
+    .faq-grid{
+      max-width:800px; margin:0 auto;
+    }
+    .faq-item{
+      background:var(--card); border:1px solid var(--card-border); border-radius:12px; margin-bottom:16px; overflow:hidden;
+    }
+    .faq-question{
+      padding:20px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;
+      font-weight:600; color:#fff; margin:0;
+    }
+    .faq-answer{
+      padding:0 20px 20px; color:var(--fg-dim); line-height:1.6; margin:0; display:none;
+    }
+    .faq-item.active .faq-answer{display:block;}
+
+    /* footer */
+    .footer{
+      background:linear-gradient(to top, rgba(11,15,26,0.95), rgba(11,15,26,0.6));
+      border-top:1px solid rgba(255,255,255,0.04); padding:60px 0 40px; margin-top:80px;
+    }
+    .footer-inner{max-width:1100px; margin:0 auto; padding:0 20px;}
+    .footer-grid{
+      display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:40px;
+    }
+    .footer-brand{font-size:24px; font-weight:800; color:var(--brand); margin:0 0 16px;}
+    .footer-desc{color:var(--fg-dim); line-height:1.6; margin:0 0 24px;}
+    .footer-heading{font-size:18px; font-weight:600; color:#fff; margin:0 0 20px;}
+    .footer-links{list-style:none; padding:0; margin:0;}
+    .footer-links li{margin-bottom:12px;}
+    .footer-links a{color:var(--fg-dim); text-decoration:none; transition:color .2s ease;}
+    .footer-links a:hover{color:var(--brand);}
+    .footer-bottom{
+      text-align:center; margin-top:60px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.04);
+      color:var(--fg-dim); font-size:14px;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(11, 15, 26, 0.9);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+    
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 16px;
+      color: #fff;
+    }
+    
+    .modal-desc {
+      color: var(--fg-dim);
+      line-height: 1.6;
+      margin: 0 0 24px;
+    }
+    
+    .contact-options {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    
+    .contact-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 24px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+    
+    .whatsapp-btn {
+      background-color: var(--whatsapp);
+      color: white;
+    }
+    
+    .whatsapp-btn:hover {
+      background-color: #128C7E;
+      transform: translateY(-2px);
+    }
+    
+    .telegram-btn {
+      background-color: var(--telegram);
+      color: white;
+    }
+    
+    .telegram-btn:hover {
+      background-color: #0072b5;
+      transform: translateY(-2px);
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+    
+    .modal-btn {
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 16px;
+    }
+    
+    .modal-btn-primary {
+      background: linear-gradient(90deg, var(--btn-grad-a), var(--btn-grad-b));
+      color: #fff;
+    }
+    
+    .modal-btn-ghost {
+      background: transparent;
+      color: #e7eaf3;
+      border: 1px solid rgba(231,234,243,.2);
+    }
+
+    @media (max-width:768px){
+      .wrap{padding:16px}
+      .btn{width:100%; justify-content:center}
+      .desc{margin:10px 0 28px}
+      .section{padding:60px 0;}
+      .section-title{font-size:28px; margin-bottom:40px;}
+      .modal-actions {
+        flex-direction: column;
+      }
+      .contact-options {
+        gap: 12px;
+      }
+      .nav {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 0;
+      }
+      .music-player {
+        margin-top: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <a class="brand" href="#">FyzzOffcial</a>
+      
+      <div class="music-player">
+        <button class="music-btn play" id="playBtn">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M3 2v12l10-6z"/>
+          </svg>
+        </button>
+        <button class="music-btn" id="pauseBtn">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M4 2h2v12H4V2zm6 0h2v12h-2V2z"/>
+          </svg>
+        </button>
+        <div class="volume-control">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 2.2V13.8c-0.6-0.5-1.5-1-3-1-1.9 0-3.5 1-5 1v-10c1.5 0 3.1-1 5-1 1.5 0 2.4 0.5 3 1zm4.5 2.5c-0.3-0.3-0.8-0.3-1.1 0s-0.3 0.8 0 1.1c0.6 0.6 1 1.5 1 2.4s-0.4 1.8-1 2.4c-0.3 0.3-0.3 0.8 0 1.1 0.2 0.2 0.4 0.2 0.5 0.2s0.4-0.1 0.5-0.2c0.8-0.8 1.3-2 1.3-3.3s-0.5-2.5-1.3-3.3z"/>
+          </svg>
+          <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider">
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="eyebrow">WhatsApp Business Solution</div>
+        <h1 class="title">Advanced WhatsApp Bot <span class="line2">For Your Business</span></h1>
+        <p class="desc">Automate customer service, marketing campaigns, and transactions with our powerful WhatsApp Bot solution. Increase efficiency and engagement with your customers.</p>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="openModal()">Get Started Now</button>
+          <button class="btn btn-ghost">Kambali</button>
+        </div>
+        <div class="ring" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2 class="section-title">Powerful Features</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#7cc6ff" stroke-width="2"/>
+                <path d="M8 14C8 14 9.5 16 12 16C14.5 16 16 14 16 14M9 9H9.01M15 9H15.01" stroke="#7cc6ff" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-title">Auto Reply</h3>
+            <p class="feature-desc">Automatically respond to customer messages with predefined answers based on keywords.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17 9V7C17 5.89543 16.1046 5 15 5H5C3.89543 5 3 5.89543 3 7V13C3 14.1046 3.89543 15 5 15H7M9 19H19C20.1046 19 21 18.1046 21 17V11C21 9.89543 20.1046 9 19 9H9C7.89543 9 7 9.89543 7 11V17C7 18.1046 7.89543 19 9 19Z" stroke="#7cc6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-title">Broadcast Messages</h3>
+            <p class="feature-desc">Send bulk messages to multiple contacts simultaneously with personalized content.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#7cc6ff" stroke-width="2"/>
+                <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="#7cc6ff" stroke-width="2"/>
+              </svg>
+            </div>
+            <h3 class="feature-title">Contact Management</h3>
+            <p class="feature-desc">Organize and manage your contacts with tags and groups for targeted messaging.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 10H21M7 15H8M12 15H13M6 19H18C19.6569 19 21 17.6569 21 16V8C21 6.34315 19.6569 5 18 5H6C4.34315 5 3 6.34315 3 8V16C3 17.6569 4.34315 19 6 19Z" stroke="#7cc6ff" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-title">Media Support</h3>
+            <p class="feature-desc">Send and receive images, videos, documents, and other media files automatically.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#7cc6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-title">Integration API</h3>
+            <p class="feature-desc">Connect with your existing systems through our comprehensive REST API.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 5V7M15 11V13M15 17V19M5 5C5 6.10457 5.89543 7 7 7H19C20.1046 7 21 6.10457 21 5C21 3.89543 20.1046 3 19 3H7C5.89543 3 5 3.89543 5 5ZM5 13C5 14.1046 5.89543 15 7 15H19C20.1046 15 21 14.1046 21 13C21 11.8954 20.1046 11 19 11H7C5.89543 11 5 11.8954 5 13ZM5 19C5 20.1046 5.89543 21 7 21H19C20.1046 21 21 20.1046 21 19C21 17.8954 20.1046 17 19 17H7C5.89543 17 5 17.8954 5 19Z" stroke="#7cc6ff" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-title">Analytics Dashboard</h3>
+            <p class="feature-desc">Track performance with detailed analytics and reports on message delivery and engagement.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2 class="section-title">Pricing Plans</h2>
+        <p class="desc" style="text-align:center; max-width:600px; margin:0 auto 40px;">Choose the plan that fits your business needs. All plans include 24/7 support and regular updates.</p>
+        
+        <div class="pricing-grid">
+          <div class="pricing-card popular">
+            <h3 class="pricing-title">Base Fyzz</h3>
+            <div class="pricing-price">Rp 9.000</div>
+            <p class="pricing-desc">Perfect for small businesses</p>
+            <ul class="pricing-features">
+              <li>Anti Overlimit</li>
+              <li>No Enc Pastinya</li></li>
+              <li>Fitur Pushkontak/Cpanel</li>
+              <li>support Buttton</li>
+              <li>Script Ringan</li>
+            </ul>
+            <div class="pricing-cta">
+              <button class="btn btn-primary" onclick="openModal('Base Fyzz', 9.000)">Choose Plan</button>
+            </div>
+          </div>
+
+          <div class="pricing-card popular">
+            <div class="popular-badge">MOST POPULAR</div>
+            <h3 class="pricing-title">Script Vantaxzz V2.8</h3>
+            <div class="pricing-price">Rp 12.000</div>
+            <p class="pricing-desc">Suitable for your business</p>
+            <ul class="pricing-features">
+              <li>Pushkontak AutoSave</li>
+              <li>Jpmch Tanpa ID Ch</li></li>
+              <li>Addakses/Delakses (button)</li>
+              <li>Cocok Buat Open Reseller</li>
+              <li>Cocok Buat Open Sewa Bot</li>
+            </ul>
+            <div class="pricing-cta">
+              <button class="btn btn-primary" onclick="openModal('Script Vantaxzz V2.8', 12.000)">Choose Plan</button>
+            </div>
+          </div>
+
+          <div class="pricing-card popular">
+            <div class="popular-badge">MOST POPULAR</div>
+            <h3 class="pricing-title">Jasa Pembuatan Script</h3>
+            <div class="pricing-price">Rp 15.000</div>
+            <p class="pricing-desc">Suitable for your business development</p>
+            <ul class="pricing-features">
+              <li>Free Castom name</li>
+              <li>Free Castom Image</li>
+              <li>Base Type Case</li>
+              <li>Free Castom Sound</li>
+            </ul>
+            <div class="pricing-cta">
+              <button class="btn btn-primary" onclick="openModal('Jasa Pembuatan Script', 15.000)">Choose Plan</button>
+            </div>
+          </div>
+  
+
+  <div class="pricing-card popular">
+    <h3 class="pricing-title">Panel Pterodactyl 1GB</h3>
+    <div class="pricing-price">Rp 1.000</div>
+    <p class="pricing-desc">Suitable for small projects</p>
+    <ul class="pricing-features">
+      <li>RAM 1GB</li>
+      <li>Free Setup</li>
+      <li>Stable Performance</li>
+      <li>Support 24/7</li>
+    </ul>
+    <div class="pricing-cta">
+      <button class="btn btn-primary" onclick="openModal('Panel 1GB', 1000)">Choose Plan</button>
+    </div>
+  </div>
+
+  <div class="pricing-card popular">
+    <h3 class="pricing-title">Panel Pterodactyl 2GB</h3>
+    <div class="pricing-price">Rp 2.000</div>
+    <p class="pricing-desc">Suitable for medium usage</p>
+    <ul class="pricing-features">
+      <li>RAM 2GB</li>
+      <li>Free Setup</li>
+      <li>Stable Performance</li>
+      <li>Support 24/7</li>
+    </ul>
+    <div class="pricing-cta">
+      <button class="btn btn-primary" onclick="openModal('Panel 2GB', 2000)">Choose Plan</button>
+    </div>
+  </div>
+
+  <div class="pricing-card popular">
+    <h3 class="pricing-title">Panel Pterodactyl 3GB</h3>
+    <div class="pricing-price">Rp 3.000</div>
+    <p class="pricing-desc">Good for lightweight apps</p>
+    <ul class="pricing-features">
+      <li>RAM 3GB</li>
+      <li>Free Setup</li>
+      <li>Stable Performance</li>
+      <li>Support 24/7</li>
+    </ul>
+    <div class="pricing-cta">
+      <button class="btn btn-primary" onclick="openModal('Panel 3GB', 3000)">Choose Plan</button>
+    </div>
+  </div>
+
+  <div class="pricing-card popular">
+    <h3 class="pricing-title">Panel Pterodactyl 4GB</h3>
+    <div class="pricing-price">Rp 4.000</div>
+    <p class="pricing-desc">Ideal for moderate projects</p>
+    <ul class="pricing-features">
+      <li>RAM 4GB</li>
+      <li>Free Setup</li>
+      <li>Stable Performance</li>
+      <li>Support 24/7</li>
+    </ul>
+    <div class="pricing-cta">
+      <button class="btn btn-primary" onclick="openModal('Panel 4GB', 4000)">Choose Plan</button>
+    </div>
+  </div>
+
+  <div class="pricing-card popular">
+    <h3 class="pricing-title">Panel Pterodactyl 5GB</h3>
+    <div class="pricing-price">Rp 5.000</div>
+    <p class="pricing-desc">Suitable for active apps</p>
+    <ul class="pricing-features">
+      <li>RAM 5GB</li>
+      <li>Free Setup</li>
+      <li>Stable Performance</li>
+      <li>Support 24/7</li>
+    </ul>
+    <div class="pricing-cta">
+      <button class="btn btn-primary" onclick="openModal('Panel 5GB', 5000)">Choose Plan</button>
+    </div>
+  </div>
+
+  <div class="pricing-card popular">
+    <h3 class="pricing-title">Panel Pterodactyl 6GB</h3>
+    <div class="pricing-price">Rp 6.000</div>
+    <p class="pricing-desc">For more demanding apps</p>
+    <ul class="pricing-features">
+      <li>RAM 6GB</li>
+      <li>Free Setup</li>
+      <li>Stable Performance</li>
+      <li>Support 24/7</li>
+    </ul>
+    <div class="pricing-cta">
+      <button class="btn btn-primary" onclick="openModal('Panel 6GB', 6000)">Choose Plan</button>
+    </div>
+  </div>
+
+  <div class="pricing-card popular">
+    <h3 class="pricing-title">Panel Pterodactyl 7GB</h3>
+    <div class="pricing-price">Rp 7.000</div>
+    <p class="pricing-desc">Best for medium servers</p>
+    <ul class="pricing-features">
+      <li>RAM 7GB</li>
+      <li>Free Setup</li>
+      <li>Stable Performance</li>
+      <li>Support 24/7</li>
+    </ul>
+    <div class="pricing-cta">
+      <button class="btn btn-primary" onclick="openModal('Panel 7GB', 7000)">Choose Plan</button>
+    </div>
+  </div>
+
+  <div class="pricing-card popular">
+    <h3 class="pricing-title">Panel Pterodactyl 8GB</h3>
+    <div class="pricing-price">Rp 8.000</div>
+    <p class="pricing-desc">Strong for heavier projects</p>
+    <ul class="pricing-features">
+      <li>RAM 8GB</li>
+      <li>Free Setup</li>
+      <li>Stable Performance</li>
+      <li>Support 24/7</li>
+    </ul>
+    <div class="pricing-cta">
+      <button class="btn btn-primary" onclick="openModal('Panel 8GB', 8000)">Choose Plan</button>
+    </div>
+  </div>
+
+  <div class="pricing-card popular">
+    <h3 class="pricing-title">Panel Pterodactyl 9GB</h3>
+    <div class="pricing-price">Rp 9.000</div>
+    <p class="pricing-desc">High performance for apps</p>
+    <ul class="pricing-features">
+      <li>RAM 9GB</li>
+      <li>Free Setup</li>
+      <li>Stable Performance</li>
+      <li>Support 24/7</li>
+    </ul>
+    <div class="pricing-cta">
+      <button class="btn btn-primary" onclick="openModal('Panel 9GB', 9000)">Choose Plan</button>
+    </div>
+  </div>
+
+  <div class="pricing-card popular">
+    <h3 class="pricing-title">Panel Pterodactyl Unlimited</h3>
+    <div class="pricing-price">Rp 10.000</div>
+    <p class="pricing-desc">Unlimited resources for your business</p>
+    <ul class="pricing-features">
+      <li>Unlimited RAM</li>
+      <li>Free Setup</li>
+      <li>Stable Performance</li>
+      <li>Support 24/7</li>
+    </ul>
+    <div class="pricing-cta">
+      <button class="btn btn-primary" onclick="openModal('Panel Unlimited', 10000)">Choose Plan</button>
+    </div>
+  </div>
+  </div>
+ </div>
+</section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <div class="faq-grid">
+          <div class="faq-item">
+            <h3 class="faq-question">Do I need coding skills to use this bot? <span>+</span></h3>
+            <p class="faq-answer">No, our bot is designed with a user-friendly interface that allows you to set up automated responses and campaigns without any coding knowledge. However, for advanced customization, basic technical skills would be beneficial.</p>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">Is this compatible with WhatsApp Business API? <span>+</span></h3>
+            <p class="faq-answer">Yes, our solution works seamlessly with the official WhatsApp Business API, ensuring compliance with WhatsApp's terms of service.</p>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">How do I install the bot? <span>+</span></h3>
+            <p class="faq-answer">After purchase, you'll receive detailed installation instructions. Generally, the process involves downloading our software, running the installer, and following the setup wizard. Our support team is available to assist if needed.</p>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">What kind of support do you provide? <span>+</span></h3>
+            <p class="faq-answer">We provide comprehensive support including documentation, video tutorials, and email support. Higher plans include priority support and dedicated account management.</p>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">Can I upgrade my plan later? <span>+</span></h3>
+            <p class="faq-answer">Yes, you can upgrade your plan at any time. The upgrade will be prorated based on your current billing cycle.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Konfirmasi Pembelian -->
+  <div class="modal" id="purchaseModal">
+    <div class="modal-content">
+      <h2 class="modal-title">Confirm Your Purchase</h2>
+      <p class="modal-desc">You are about to purchase the <span id="selectedPlan">Professional</span> plan for <span id="planPrice">Rp 599,000</span>. Choose your preferred contact method to complete your purchase.</p>
+      
+      <div class="contact-options">
+        <button class="contact-btn whatsapp-btn" onclick="redirectToWhatsApp()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.150-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.130-.606.134-.133.298-.347.446-.520.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.520-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.040 1.016-1.040 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.200 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.360.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.030 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.864 3.488" fill="currentColor"/>
+          </svg>
+          Contact via WhatsApp
+        </button>
+        
+        <button class="contact-btn telegram-btn" onclick="redirectToTelegram()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0C5.374 0 0 5.374 0 12s5.374 12 12 12 12-5.374 12-12S18.626 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.509l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.05 5.56-5.022c.241-.213-.054-.334-.373-.121l-6.87 4.326-2.96-.924c-.64-.203-.652-.64.136-.954l11.566-4.458c.538-.196 1.006.128.832.941z" fill="currentColor"/>
+          </svg>
+          Contact via Telegram
+        </button>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-ghost" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">FyzzOffcial</div>
+          <p class="footer-desc">Providing premium hosting and automation solutions for businesses of all sizes.</p>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Products</h4>
+          <ul class="footer-links">
+            <li><a href="#">WhatsApp Bot</a></li>
+            <li><a href="#">Web Hosting</a></li>
+            <li><a href="#">VPS Hosting</a></li>
+            <li><a href="#">Domain Registration</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Company</h4>
+          <ul class="footer-links">
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Support</h4>
+          <ul class="footer-links">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">Status</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2023 FyzzOffcial. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Audio Element -->
+  <audio id="backgroundMusic" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/01/20/audio_d17139f9c5.mp3?filename=soft-inspiring-background-amp-121529.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    // Simple FAQ toggle functionality
+    document.querySelectorAll('.faq-question').forEach(question => {
+      question.addEventListener('click', () => {
+        const item = question.parentElement;
+        item.classList.toggle('active');
+        
+        // Update the toggle sign
+        const sign = question.querySelector('span');
+        sign.textContent = item.classList.contains('active') ? '−' : '+';
+      });
+    });
+
+    // Variabel global untuk menyimpan pilihan paket
+    let selectedPlan = {
+      name: 'Professional',
+      price: 599000
+    };
+
+    // Fungsi untuk membuka modal
+    function openModal(planName = 'Professional', planPrice = 599000) {
+      selectedPlan = {
+        name: planName,
+        price: planPrice
+      };
+      
+      // Update teks di modal
+      document.getElementById('selectedPlan').textContent = planName;
+      document.getElementById('planPrice').textContent = formatRupiah(planPrice);
+      
+      // Tampilkan modal
+      document.getElementById('purchaseModal').style.display = 'flex';
+    }
+
+    // Fungsi untuk menutup modal
+    function closeModal() {
+      document.getElementById('purchaseModal').style.display = 'none';
+    }
+
+    // Fungsi untuk redirect ke WhatsApp
+    function redirectToWhatsApp() {
+      const message = `Halo, saya ingin membeli paket ${selectedPlan.name} WhatsApp Bot seharga ${formatRupiah(selectedPlan.price)}.`;
+      const whatsappURL = `https://wa.me/6285835692106?text=${encodeURIComponent(message)}`;
+      window.open(whatsappURL, '_blank');
+      closeModal();
+    }
+
+    // Fungsi untuk redirect ke Telegram
+    function redirectToTelegram() {
+      const message = `Halo, saya ingin membeli paket ${selectedPlan.name} WhatsApp Bot seharga ${formatRupiah(selectedPlan.price)}.`;
+      const telegramURL = `https://t.me/FixzzCok?text=${encodeURIComponent(message)}`;
+      window.open(telegramURL, '_blank');
+      closeModal();
+    }
+
+    // Format angka ke Rupiah
+    function formatRupiah(amount) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+      }).format(amount);
+    }
+
+    // Tutup modal jika klik di luar konten modal
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('purchaseModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    // Music Player Functionality
+    const audio = document.getElementById('backgroundMusic');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    
+    // Set volume awal
+    audio.volume = 0.5;
+    
+    // Play music
+    playBtn.addEventListener('click', () => {
+      audio.play();
+      playBtn.classList.add('play');
+      pauseBtn.classList.remove('play');
+    });
+    
+    // Pause music
+    pauseBtn.addEventListener('click', () => {
+      audio.pause();
+      pauseBtn.classList.add('play');
+      playBtn.classList.remove('play');
+    });
+    
+    // Volume control
+    volumeSlider.addEventListener('input', () => {
+      const volume = volumeSlider.value / 100;
+      audio.volume = volume;
+    });
+    
+    // Auto play music dengan interaksi pengguna pertama kali
+    document.body.addEventListener('click', function initAudio() {
+      // Coba play audio
+      audio.play().then(() => {
+        playBtn.classList.add('play');
+      }).catch(error => {
+        console.log('Auto-play prevented:', error);
+        // Hanya tampilkan console error, tidak perlu menampilkan alert ke pengguna
+      });
+      
+      // Hapus event listener setelah pertama kali dijalankan
+      document.body.removeEventListener('click', initAudio);
+    }, { once: true });
+  </script>
+</body>
+</html>
